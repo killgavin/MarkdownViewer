@@ -4,6 +4,30 @@ Imports Markdig
 Public Class MainForm
     ' Markdown 轉換器
     Private markdownPipeline As Markdig.MarkdownPipeline
+    
+    ' HTML 範本常數
+    Private Const HtmlTemplate As String = "<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif; padding: 20px; }}
+        h1, h2, h3, h4, h5, h6 {{ color: #333; }}
+        code {{ background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }}
+        pre {{ background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }}
+        blockquote {{ border-left: 4px solid #ddd; padding-left: 15px; color: #666; }}
+        table {{ border-collapse: collapse; width: 100%; }}
+        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+        th {{ background-color: #f2f2f2; }}
+    </style>
+</head>
+<body>
+{0}
+</body>
+</html>"
+
+    ' 檔案大小限制（10 MB）
+    Private Const MaxFileSizeBytes As Long = 10 * 1024 * 1024
 
     Public Sub New()
         InitializeComponent()
@@ -26,29 +50,21 @@ Public Class MainForm
     ' 載入 Markdown 檔案
     Private Sub LoadMarkdownFile(filePath As String)
         Try
+            ' 檢查檔案大小
+            Dim fileInfo As New FileInfo(filePath)
+            If fileInfo.Length > MaxFileSizeBytes Then
+                MessageBox.Show($"檔案過大，無法載入。檔案大小限制為 {MaxFileSizeBytes / 1024 / 1024} MB。",
+                                "錯誤",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning)
+                Return
+            End If
+
             Dim markdownContent As String = File.ReadAllText(filePath)
             Dim htmlContent As String = Markdown.ToHtml(markdownContent, markdownPipeline)
 
-            ' 建立完整的 HTML 文件
-            Dim fullHtml As String = $"<!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8'>
-    <style>
-        body {{ font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif; padding: 20px; }}
-        h1, h2, h3, h4, h5, h6 {{ color: #333; }}
-        code {{ background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }}
-        pre {{ background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }}
-        blockquote {{ border-left: 4px solid #ddd; padding-left: 15px; color: #666; }}
-        table {{ border-collapse: collapse; width: 100%; }}
-        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-        th {{ background-color: #f2f2f2; }}
-    </style>
-</head>
-<body>
-{htmlContent}
-</body>
-</html>"
+            ' 使用範本建立完整的 HTML 文件
+            Dim fullHtml As String = String.Format(HtmlTemplate, htmlContent)
 
             webBrowser.DocumentText = fullHtml
             lblStatus.Text = $"已載入：{Path.GetFileName(filePath)}"
