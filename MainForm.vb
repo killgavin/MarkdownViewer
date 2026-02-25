@@ -66,7 +66,8 @@ Public Class MainForm
             Dim htmlContent As String = Markdown.ToHtml(markdownContent, markdownPipeline)
 
             ' 取得檔案所在目錄作為 base URL，以支援相對路徑圖片
-            Dim baseUri As String = New Uri(Path.GetDirectoryName(filePath) & Path.DirectorySeparatorChar).AbsoluteUri
+            ' 使用 ToString() 而非 AbsoluteUri，避免中文路徑被 percent-encode 導致 WebBrowser 無法解析
+            Dim baseUri As String = New Uri(Path.GetDirectoryName(filePath) & Path.DirectorySeparatorChar).ToString()
 
             ' 使用範本建立完整的 HTML 文件
             Dim fullHtml As String = String.Format(HtmlTemplate, htmlContent, baseUri)
