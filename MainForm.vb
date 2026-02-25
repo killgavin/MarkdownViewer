@@ -10,6 +10,7 @@ Public Class MainForm
 <html>
 <head>
     <meta charset='utf-8'>
+    <base href='{1}'>
     <style>
         body {{ font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif; padding: 20px; }}
         h1, h2, h3, h4, h5, h6 {{ color: #333; }}
@@ -63,8 +64,11 @@ Public Class MainForm
             Dim markdownContent As String = File.ReadAllText(filePath)
             Dim htmlContent As String = Markdown.ToHtml(markdownContent, markdownPipeline)
 
+            ' 取得檔案所在目錄作為 base URL，以支援相對路徑圖片
+            Dim baseUri As String = New Uri(Path.GetDirectoryName(filePath) & Path.DirectorySeparatorChar).AbsoluteUri
+
             ' 使用範本建立完整的 HTML 文件
-            Dim fullHtml As String = String.Format(HtmlTemplate, htmlContent)
+            Dim fullHtml As String = String.Format(HtmlTemplate, htmlContent, baseUri)
 
             webBrowser.DocumentText = fullHtml
             lblStatus.Text = $"已載入：{Path.GetFileName(filePath)}"
