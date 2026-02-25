@@ -17,6 +17,7 @@ Public Class MainForm
         code {{ background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }}
         pre {{ background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }}
         blockquote {{ border-left: 4px solid #ddd; padding-left: 15px; color: #666; }}
+        img {{ max-width: 100%; height: auto; display: block; }}
         table {{ border-collapse: collapse; width: 100%; }}
         th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
         th {{ background-color: #f2f2f2; }}
