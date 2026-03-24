@@ -4,6 +4,9 @@ Imports Markdig
 Public Class MainForm
     ' Markdown 轉換器
     Private markdownPipeline As Markdig.MarkdownPipeline
+
+    ' 目前開啟的檔案路徑
+    Private currentFilePath As String = Nothing
     
     ' HTML 範本常數
     Private Const HtmlTemplate As String = "<!DOCTYPE html>
@@ -73,6 +76,8 @@ Public Class MainForm
             Dim fullHtml As String = String.Format(HtmlTemplate, htmlContent, baseUri)
 
             webBrowser.DocumentText = fullHtml
+            currentFilePath = filePath
+            btnRefresh.Enabled = True
             lblStatus.Text = $"已載入：{Path.GetFileName(filePath)}"
         Catch ex As Exception
             MessageBox.Show($"載入檔案時發生錯誤：{ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -82,11 +87,45 @@ Public Class MainForm
     ' 關於對話框
     Private Sub btnAbout_Click(sender As Object, e As EventArgs) Handles btnAbout.Click
         MessageBox.Show("Markdown 檢視器" & vbCrLf & vbCrLf &
-                        "版本：1.0.0" & vbCrLf &
+                        "版本：1.1.0" & vbCrLf &
                         "使用 VB.NET Windows Forms 開發" & vbCrLf &
                         "支援標準 Markdown 語法",
                         "關於",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information)
+    End Sub
+
+    ' 重新整理（重新載入目前檔案）
+    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
+        If currentFilePath IsNot Nothing AndAlso File.Exists(currentFilePath) Then
+            LoadMarkdownFile(currentFilePath)
+        Else
+            MessageBox.Show("目前沒有開啟的檔案，或檔案已被刪除。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+    End Sub
+
+    ' 拖曳進入事件
+    Private Sub MainForm_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Dim files As String() = CType(e.Data.GetData(DataFormats.FileDrop), String())
+            If files.Length = 1 Then
+                Dim ext As String = Path.GetExtension(files(0)).ToLowerInvariant()
+                If ext = ".md" OrElse ext = ".markdown" Then
+                    e.Effect = DragDropEffects.Copy
+                    Return
+                End If
+            End If
+        End If
+        e.Effect = DragDropEffects.None
+    End Sub
+
+    ' 拖曳放下事件
+    Private Sub MainForm_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Dim files As String() = CType(e.Data.GetData(DataFormats.FileDrop), String())
+            If files.Length > 0 Then
+                LoadMarkdownFile(files(0))
+            End If
+        End If
     End Sub
 End Class

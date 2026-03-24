@@ -24,6 +24,7 @@ Partial Class MainForm
     Private Sub InitializeComponent()
         Me.toolStrip = New System.Windows.Forms.ToolStrip()
         Me.btnOpen = New System.Windows.Forms.ToolStripButton()
+        Me.btnRefresh = New System.Windows.Forms.ToolStripButton()
         Me.toolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.btnAbout = New System.Windows.Forms.ToolStripButton()
         Me.statusStrip = New System.Windows.Forms.StatusStrip()
@@ -35,7 +36,7 @@ Partial Class MainForm
         '
         'toolStrip
         '
-        Me.toolStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.btnOpen, Me.toolStripSeparator1, Me.btnAbout})
+        Me.toolStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.btnOpen, Me.btnRefresh, Me.toolStripSeparator1, Me.btnAbout})
         Me.toolStrip.Location = New System.Drawing.Point(0, 0)
         Me.toolStrip.Name = "toolStrip"
         Me.toolStrip.Size = New System.Drawing.Size(1000, 25)
@@ -48,6 +49,14 @@ Partial Class MainForm
         Me.btnOpen.Name = "btnOpen"
         Me.btnOpen.Size = New System.Drawing.Size(60, 22)
         Me.btnOpen.Text = "開啟檔案"
+        '
+        'btnRefresh
+        '
+        Me.btnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.btnRefresh.Name = "btnRefresh"
+        Me.btnRefresh.Size = New System.Drawing.Size(60, 22)
+        Me.btnRefresh.Text = "重新整理"
+        Me.btnRefresh.Enabled = False
         '
         'toolStripSeparator1
         '
@@ -93,6 +102,7 @@ Partial Class MainForm
         Me.Controls.Add(Me.webBrowser)
         Me.Controls.Add(Me.statusStrip)
         Me.Controls.Add(Me.toolStrip)
+        Me.AllowDrop = True
         Me.Name = "MainForm"
         Me.Text = "Markdown 檢視器"
         Me.toolStrip.ResumeLayout(False)
@@ -105,6 +115,7 @@ Partial Class MainForm
 
     Private WithEvents toolStrip As ToolStrip
     Private WithEvents btnOpen As ToolStripButton
+    Private WithEvents btnRefresh As ToolStripButton
     Private WithEvents toolStripSeparator1 As ToolStripSeparator
     Private WithEvents btnAbout As ToolStripButton
     Private WithEvents statusStrip As StatusStrip
